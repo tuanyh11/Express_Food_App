@@ -54,7 +54,7 @@ class AuthCtl {
             if(!/^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-z]+)$/.test(email)) 
                 return res.status(401).json({success: false, message: "email invalid format", data: null})
 
-            const existingUser = await User.findOne({email: email})     
+            const existingUser = await User.findOne({email})     
 
             if(existingUser) 
                 return res.status(401).json({success: false, message: "email already exist", data: null})
@@ -69,8 +69,8 @@ class AuthCtl {
 
             const {code, expiryDate, createdAt} =  await this.SendCodeToEmail(email)
 
-            const {_id, email} =  await new User({email, password: encryptPassword, userName, roleId: roleId, registerCode: {code, expiryDate, createdAt}}).save() 
-            return res.status(200).json({success: true, message: "register successful", data: {email, _id}})
+            const {_id, email: newEmail} =  await new User({email, password: encryptPassword, userName, roleId: roleId, registerCode: {code, expiryDate, createdAt}}).save() 
+            return res.status(200).json({success: true, message: "register successful", data: {email: newEmail, _id}})
 
         } catch (error) {
             return res.status(500).json({success: false, message: "register failed", data: null})
