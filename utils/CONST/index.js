@@ -18,7 +18,7 @@ const env = {
     EMAIL,
     PORT,
     JWT,
-    URL_DATABASE
+    URL_DATABASE 
 }
 
 export default env
