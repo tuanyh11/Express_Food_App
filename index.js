@@ -51,16 +51,14 @@ const startServert = async () => {
 
     app.use('/static', express.static(path.join(path.resolve(), '/uploads')));
 
-    app.use("/", (req, res) => {
-        res.send("hello world!");
-    })
 
     
     defineRouter(app)
 
-    // app.get("/", (req, res) => {
-    //     res.send('Hello World!')
-    // })
+    
+    app.use("/", (req, res) => {
+        res.send("hello world!");
+    })
 
 
     
