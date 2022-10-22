@@ -41,7 +41,7 @@ const startServert = async () => {
     // rest api endpoints 
     
     app.use(cors({
-        origin: ["http://localhost:3000/", "https://homefooddriver.netlify.app", "https://food-ec.netlify.app"],
+        origin: ["http://localhost:3000", "https://homefooddriver.netlify.app", "https://food-ec.netlify.app"],
 
         methods: ["GET", "HEAD", "OPTIONS", "POST", "PUT", "DELETE"]
     }))
