@@ -37,7 +37,7 @@ const startServert = async () => {
 
     // await server.start(); 
     
-    // server.applyMiddleware({app})
+    // server.applyMiddleware({app}) 
     // rest api endpoints 
     
     app.use(cors({
