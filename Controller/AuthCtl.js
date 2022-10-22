@@ -31,7 +31,7 @@ class AuthCtl {
                 
             const {password: newPassword, ...orthers} = user._doc
 
-            if(user.verified || user.registerCode.code) return res.status(402).json({success: false, message: "you have to verify code", data: {_id: orthers._id, email: orthers.email}})
+            if(!user.verified || !user.registerCode.code) return res.status(402).json({success: false, message: "you have to verify code", data: {_id: orthers._id, email: orthers.email}})
 
 
             const token = jwt.sign({email, password, userName: user.userName, roleId: user.roleId}, env.JWT, {expiresIn: '48h'})
