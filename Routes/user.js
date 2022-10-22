@@ -1,5 +1,5 @@
 import { Router } from "express";
-import UserCtl from "../Controller/userCtl.js";
+import UserCtl from "../Controller/UserCtl.js";
 
 const {GetUserById, GetUsers, CreateUser, DelUser, UpdateUser} = new UserCtl();
 
