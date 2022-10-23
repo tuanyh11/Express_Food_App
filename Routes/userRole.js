@@ -1,18 +1,18 @@
 import { Router } from "express";
-import UserRoleCtl from "../Controller/userRoleCtl.js";
+import RoleCtl from "../Controller/RoleCtl.js"; 
 
-const { GetUserRoles, CreateUserRole, DelUserRole, UpdateUserRole, GetUserRole} = new UserRoleCtl();
+const { GetRole, GetRoles, CreateRole, DelRole, UpdateRole} = new RoleCtl();
 
-const userRoleRouter = Router()
+const RoleRouter = Router()
 
-userRoleRouter.get("/", GetUserRoles)
+RoleRouter.get("/", GetRoles)
 
-userRoleRouter.post("/", CreateUserRole)
+RoleRouter.post("/", CreateRole)
 
-userRoleRouter.route("/:id")
-    .delete(DelUserRole)
-    .put(UpdateUserRole)
-    .get(GetUserRole)
+RoleRouter.route("/:id")
+    .delete(DelRole)
+    .put(UpdateRole)
+    .get(GetRole)
 
 
-export default userRoleRouter
+export default RoleRouter
