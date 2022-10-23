@@ -41,7 +41,7 @@ class ProductCtl {
     async DelProduct(req, res) { 
         try {
             const id = req.params.id
-            const product = await ProductModel.findByIdAndUpdate(id, {active: false})
+            const product = await ProductModel.findByIdAndDelete(id)
             return res.status(200).json({success: true, message: "delete product successful", data: product});
         } catch (error) {
             return res.status(404).json({success: false, message: "delete product failed", data: null})
