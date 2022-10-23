@@ -41,7 +41,7 @@ const startServert = async () => {
     // rest api endpoints 
     
     app.use(cors({
-        origin: ["http://localhost:3000", "https://homefooddriver.netlify.app", "https://food-ec.netlify.app"],
+        origin: ["http://localhost:3000","http://localhost:3001", "https://homefooddriver.netlify.app", "https://food-ec.netlify.app"],
 
         methods: ["GET", "HEAD", "OPTIONS", "POST", "PUT", "DELETE"]
     }))
@@ -52,7 +52,6 @@ const startServert = async () => {
     app.use('/static', express.static(path.join(path.resolve(), '/uploads')));
 
 
-    
     defineRouter(app)
 
     
