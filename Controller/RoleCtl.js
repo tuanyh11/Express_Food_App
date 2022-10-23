@@ -5,8 +5,8 @@ class RoleCtl {
 
     async GetRoles(req, res) {
         try {
-            const Roles = await Role.find({active: true})
-            return res.status(200).json({success: true, message: "get Roles successful", data: Roles});
+            const roles = await Role.find()
+            return res.status(200).json({success: true, message: "get Roles successful", data: roles});
         } catch (error) {
             return res.status(404).json({success: false, message: "get Roles failed", data: null})
         }
@@ -15,11 +15,9 @@ class RoleCtl {
     async GetRole(req, res) {
         const id = req.params.id
         try {
-            console.log(id)
-            const Role = await Role.findOne({_id: id, active: true})
-            console.log(Role);
+            const role = await Role.findOne({_id: id, active: true})
 
-            return res.status(200).json({success: true, message: "get Role successful", data: Role});
+            return res.status(200).json({success: true, message: "get Role successful", data: role});
         } catch (error) {
             console.log(error);
             return res.status(403).json({success: false, message: "get Role failed", data: null})
@@ -28,18 +26,18 @@ class RoleCtl {
 
     
     async CreateRole(req, res) {
-        const {name, displayName} = req.body
+        const {name, displayName, monthlySalary} = req.body
           
        try {
         if(!name || !displayName) 
             return res.status(403).json({success: false, message: "name and displayname is required", data: null})
 
-        const existingRole = await Role.findOne({$or: [{name: name}, {displayName: displayName}], $and: [{active: true}]}) 
+        const existingRole = await Role.findOne({$or: [{name: name}, {displayName: displayName}]}) 
 
         if(existingRole) 
             return res.status(403).json({success: false, message: " role or displayname  already exist", data: null})
  
-        const newRole = new Role({name, displayName})
+        const newRole = new Role({name, displayName, monthlySalary})
 
         newRole.save()
 
@@ -52,9 +50,10 @@ class RoleCtl {
     async DelRole(req, res) { 
         try {
             const id = req.params.id
-            const Role = await Role.findOneAndUpdate({_id: id},  {active: false}, {new: true})
-            return res.status(200).json({success: true, message: "delete  role successful", data: Role});
+            const role = await Role.findOneAndRemove({_id: id})
+            return res.status(200).json({success: true, message: "delete  role successful", data: role});
         } catch (error) {
+            console.log(error)
             return res.status(404).json({success: false, message: "delete  role failed", data: null})
         }
     }
@@ -69,8 +68,8 @@ class RoleCtl {
             if(existingRole) 
                 return res.status(403).json({success: false, message: "name already exist", data: null})
 
-            const Role = await Role.findOneAndUpdate({_id: id},  {name: name}, {new: true})
-            return res.status(200).json({success: true, message: "upadete  role successful", data: Role});
+            const role = await Role.findOneAndUpdate({_id: id},  {name: name}, {new: true})
+            return res.status(200).json({success: true, message: "upadete  role successful", data: role});
         } catch (error) {
             return res.status(404).json({success: false, message: "upadete  role failed", data: null})
         }

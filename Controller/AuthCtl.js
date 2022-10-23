@@ -65,11 +65,9 @@ class AuthCtl {
 
             const encryptPassword =  CryptoJS.AES.encrypt(password, env.PASSWORD_KEY).toString()
 
-            const roleId = await UserRole.findOne({displayName: 'user'},{_id: 1})
-
             const {code, expiryDate, createdAt} =  await this.SendCodeToEmail(email)
 
-            const {_id, email: newEmail} =  await new User({email, password: encryptPassword, userName, roleId: roleId, registerCode: {code, expiryDate, createdAt}}).save() 
+            const {_id, email: newEmail} =  await new User({email, password: encryptPassword, userName, registerCode: {code, expiryDate, createdAt}}).save() 
             return res.status(200).json({success: true, message: "register successful", data: {email: newEmail, _id}})
 
         } catch (error) {

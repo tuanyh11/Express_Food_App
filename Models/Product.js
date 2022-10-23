@@ -26,6 +26,7 @@ const ProductSchema = new Schema(
             option: String,
             price: Number,
             image: String,
+            quantity: Number,
             unique: String
         }
     ],

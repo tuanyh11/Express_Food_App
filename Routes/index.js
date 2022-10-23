@@ -1,5 +1,5 @@
 import userRouter from "./user.js"
-import userRoleRouter from "./userRole.js"
+import userRoleRouter from "./UserRole.js"
 import productRouter from "./product.js"
 import authRouter from "./Auth.js"
 import categoryRouter from "./Category.js"
