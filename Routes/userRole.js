@@ -3,16 +3,16 @@ import RoleCtl from "../Controller/RoleCtl.js";
 
 const { GetRole, GetRoles, CreateRole, DelRole, UpdateRole} = new RoleCtl();
 
-const RoleRouter = Router()
+const roleRouter = Router()
 
-RoleRouter.get("/", GetRoles)
+roleRouter.get("/", GetRoles)
 
-RoleRouter.post("/", CreateRole)
+roleRouter.post("/", CreateRole)
 
-RoleRouter.route("/:id")
+roleRouter.route("/:id")
     .delete(DelRole)
     .put(UpdateRole)
     .get(GetRole)
 
 
-export default RoleRouter
+export default roleRouter
