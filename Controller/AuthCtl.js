@@ -88,7 +88,7 @@ class AuthCtl {
                 return res.status(401).json({success: false, message: "email invalid format", data: null})
 
             const existingUser = await User.findOne({email})     
-
+            
             if(existingUser) 
                 return res.status(401).json({success: false, message: "email already exist", data: null})
             if(!email || !userName || !password || !passwordConfirm) 
@@ -111,7 +111,7 @@ class AuthCtl {
 
         } catch (error) {
             console.log(error)
-            return res.status(401).json({success: false, message: "register failed", data: null})
+            return res.status(401).json({success: false, message: "register failed", data: error})
         }
     }
 
