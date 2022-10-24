@@ -41,9 +41,7 @@ const startServert = async () => {
     // rest api endpoints 
     
     app.use(cors({
-        origin: ["http://localhost:3000","http://localhost:3001", "https://homefooddriver.netlify.app", "https://food-ec.netlify.app"],
-
-        methods: ["GET", "HEAD", "OPTIONS", "POST", "PUT", "DELETE"]
+        origin: "*"
     }))
     app.use(express.urlencoded({ extended: true }))
     app.use(express.json())
@@ -69,7 +67,7 @@ const startServert = async () => {
     })
 }
 
-conn.createConnection(env.URL_DATABASE, (error) => {
+conn.createConnection('mongodb://localhost:27017/', (error) => {
     if(error) {
         console.log(error);
     } else { 

@@ -64,7 +64,7 @@ import Role from "../Models/UserRole.js";
 
             const existingRole = await Role.findOne({name}) 
 
-            if(existingRole) 
+            if(existingRole?.id !== id && existingRole) 
                 return res.status(403).json({success: false, message: "name already exist", data: null})
 
             const role = await Role.findOneAndUpdate({_id: id},  {name: name}, {new: true})

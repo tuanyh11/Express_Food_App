@@ -133,7 +133,7 @@ class AuthCtl {
             if(expiryDate < new Date()) return res.status(401).json({success: false, message: "code has expried. Try new code", data: null})
 
             const encryptCode =  CryptoJS.AES.decrypt(existingUser.registerCode.code, env.CODE).toString(CryptoJS.enc.Utf8)
-            console.log(encryptCode, code, env.CODE)
+            console.log(encryptCode, code)
 
             if(encryptCode !== code) return res.status(401).json({success: false, message: "invalid code", data: null})
 
