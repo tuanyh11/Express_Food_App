@@ -4,9 +4,9 @@ import authRouter from "./Auth.js"
 import categoryRouter from "./Category.js"
 import comboRouter from "./Combo.js"
 import uploadRouter from "./Upload.js"
-import roleRouter from "./UserRole.js"
 import stripeRouter from "./Stripe.js"
 import orderRouter from "./Order.js"
+import roleRouter from "./role.js"
 
 const defineRouter = (app) => {  
     app.use("/api/user", userRouter) 

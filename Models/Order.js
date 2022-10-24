@@ -12,7 +12,8 @@ const OrderSchema = new Schema(
     default: "pending"
    },
    employeeId: String,
-   address: Object
+   address: Object,
+   amount: Number
   },
   {
     timeseries: true,
@@ -20,3 +21,4 @@ const OrderSchema = new Schema(
 );
 
 export default mongoose.model("Order", OrderSchema);
+ 

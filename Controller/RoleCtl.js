@@ -1,9 +1,8 @@
 import Role from "../Models/UserRole.js";
 
 
-class RoleCtl {
 
-    async GetRoles(req, res) {
+ export  const GetRoles = async (req, res) => {
         try {
             const roles = await Role.find()
             return res.status(200).json({success: true, message: "get Roles successful", data: roles});
@@ -12,7 +11,7 @@ class RoleCtl {
         }
     }
 
-    async GetRole(req, res) {
+ export  const GetRole = async (req, res) =>{
         const id = req.params.id
         try {
             const role = await Role.findOne({_id: id, active: true})
@@ -23,9 +22,9 @@ class RoleCtl {
             return res.status(403).json({success: false, message: "get Role failed", data: null})
         }
     }
-
+ 
     
-    async CreateRole(req, res) {
+ export  const CreateRole = async (req, res) => {
         const {name, displayName, monthlySalary} = req.body
           
        try {
@@ -47,7 +46,7 @@ class RoleCtl {
        }
     } 
 
-    async DelRole(req, res) { 
+ export  const DelRole = async (req, res) =>{ 
         try {
             const id = req.params.id
             const role = await Role.findOneAndRemove({_id: id})
@@ -58,7 +57,7 @@ class RoleCtl {
         }
     }
 
-    async UpdateRole(req, res) {
+ export  const UpdateRole = async (req, res) => {
         try {
             const id = req.params.id
             const {name} = req.body
@@ -74,7 +73,3 @@ class RoleCtl {
             return res.status(404).json({success: false, message: "upadete  role failed", data: null})
         }
     }
-
-}
-
-export default RoleCtl

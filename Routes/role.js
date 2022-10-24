@@ -1,7 +1,6 @@
 import { Router } from "express";
-import RoleCtl from "../Controller/RoleCtl.js"; 
+import { GetRole, GetRoles, CreateRole, DelRole, UpdateRole} from "../Controller/RoleCtl.js"; 
 
-const { GetRole, GetRoles, CreateRole, DelRole, UpdateRole} = new RoleCtl();
 
 const roleRouter = Router()
 
