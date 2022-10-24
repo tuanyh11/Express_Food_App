@@ -63,7 +63,7 @@ class UserCtl {
     async UpdateUser(req, res) {
         try {
             const id = req.params.id
-            const {email, password, passwordConfirm, ...others} = req.body
+            const {email, password, passwordConfirm, address, ...others} = req.body
             const existingUser = await UserModel.findOne({email: email}) 
             if(existingUser.id !== id) 
                 return res.status(403).json({success: false, message: "email already exist", data: null})
@@ -71,11 +71,12 @@ class UserCtl {
             if(password !== passwordConfirm) 
                 return res.status(403).json({success: false, message: "password and passwordConfirm not match", data: null})
             
-            const encryptPassword =  CryptoJS.AES.encrypt(password, "mykey").toString()
+            const encryptPassword =  CryptoJS.AES.encrypt(password, process.env.PASSWORD_KEY).toString()
 
-            const user = await UserModel.findOneAndUpdate({_id: id},  {password: encryptPassword, email, ...others}, {new: true})
+            const user = await UserModel.findOneAndUpdate({_id: id},  {password: encryptPassword, email, address: {...address}, ...others }, {new: true})
             return res.status(200).json({success: true, message: "upadete user successful", data: user});
         } catch (error) {
+            console.log(error)
             return res.status(403).json({success: false, message: "upadete user failed", data: null})
         }
     }
@@ -95,7 +96,7 @@ class UserCtl {
                         }
                     },
                     {
-                        $match: {roleId: role.id}
+                        $match: {$and: [{roleId: role.id}, {active: true}]}
                     },
                     {
                         $unwind: {
@@ -111,7 +112,7 @@ class UserCtl {
                 ])
                 return res.status(200).json({success: true, message: "get users successful", data: users});
             }
-            const users = await UserModel.find({roleId: null})
+            const users = await UserModel.find({roleId: null, active: true})
             return res.status(200).json({success: true, message: "get users successful", data: users});
         } catch (error) {
             console.log(error)

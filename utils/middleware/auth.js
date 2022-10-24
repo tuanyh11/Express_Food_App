@@ -7,7 +7,7 @@ export const userAuth = (req, res, next) => {
     if(!token)  
       return res.status(401).json({success: false, message: "you are not logged in", data: null})
     try {
-        const user =  jwt.verify(token, "mykey")
+        const user =  jwt.verify(token, process.env.JWT)
         req.user = user
         next() 
     } catch (error) { 

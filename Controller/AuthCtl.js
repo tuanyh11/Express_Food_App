@@ -6,7 +6,41 @@ import UserRole from "../Models/UserRole.js";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer"
 import env from '../utils/CONST/index.js'
+import Cart from "../Models/Cart.js";
 
+
+const SendCodeToEmail = async (email) => {
+
+    let code = Math.round(Math.random() * 9000)
+    let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        port: 587,
+        secure: false,
+        auth: {
+          user: env.EMAIL, 
+          pass: env.PASS_EMAIL, 
+        },
+    });
+
+    
+    await transporter.sendMail({
+        from: 'test', // sender address
+        to: email, // list of receivers
+        subject: "Your code ✔", // Subject line
+        text: `${code}`, // plain text body
+        html: `<b>Verify your code ${code}</b>`, // html body
+    });
+
+    const hashCode = CryptoJS.AES.encrypt(code.toString(), env.CODE).toString()
+    const expiryDate = new Date(new Date().setHours(26))
+    const createdAt = new Date()
+
+    return {
+        code: hashCode,
+        expiryDate,
+        createdAt,
+    }
+}
 
 
 class AuthCtl {
@@ -18,13 +52,13 @@ class AuthCtl {
             if(!email || !password ) 
                 return res.status(401).json({success: false, message: "input field can not be empty", data: null})
             
-            const user = await User.findOne({email: email})
+            const user = await User.findOne({email: email, active: true})
 
             if(!user) 
-                return res.status(403).json({success: false, message: "invalid credentials", data: null})
+                return res.status(401).json({success: false, message: "invalid credentials", data: null})
 
-            const decryptPassword = CryptoJS.AES.decrypt(user.password, env.JWT).toString(CryptoJS.enc.Utf8)
-
+            const decryptPassword = CryptoJS.AES.decrypt(user.password, env.PASSWORD_KEY).toString(CryptoJS.enc.Utf8)
+            console.log(decryptPassword)
 
             if(!(decryptPassword === password)) 
                 return res.status(401).json({success: false, message: "invalid credentials", data: null})  
@@ -34,7 +68,7 @@ class AuthCtl {
             if(!user.verified || user.registerCode.code) return res.status(402).json({success: false, message: "you have to verify code", data: {_id: orthers._id, email: orthers.email}})
 
 
-            const token = jwt.sign({email, password, userName: user.userName, roleId: user.roleId}, env.JWT, {expiresIn: '48h'})
+            const token = jwt.sign({email, password, userName: user.userName, roleId: user.roleId, id: user._id}, env.JWT, {expiresIn: '48h'})
 
             
 
@@ -65,13 +99,20 @@ class AuthCtl {
 
             const encryptPassword =  CryptoJS.AES.encrypt(password, env.PASSWORD_KEY).toString()
 
-            const {code, expiryDate, createdAt} =  await this.SendCodeToEmail(email)
+            const {code, expiryDate, createdAt} =  await SendCodeToEmail(email)
 
-            const {_id, email: newEmail} =  await new User({email, password: encryptPassword, userName, registerCode: {code, expiryDate, createdAt}}).save() 
+            
+
+
+            const {_id, email: newEmail} =  await new User({email, password: encryptPassword, userName, registerCode: {code, expiryDate, createdAt}}).save()
+            const newCart = new Cart({userId: _id}) 
+            await newCart.save()
+            
             return res.status(200).json({success: true, message: "register successful", data: {email: newEmail, _id}})
 
         } catch (error) {
-            return res.status(500).json({success: false, message: "register failed", data: null})
+            console.log(error)
+            return res.status(401).json({success: false, message: "register failed", data: null})
         }
     }
 
@@ -79,22 +120,25 @@ class AuthCtl {
         try {
             const {id, email, code} = req.body
 
-            if(!id || !email || !code) return res.status(402).json({success: false, message: "field is required", data: null})
+            if(!id || !email || !code) return res.status(401).json({success: false, message: "field is required", data: null})
              
 
-            const existingUser = await User.findOne({email: email})
+            const existingUser = await User.findOne({email: email, active: true})
 
-            if(!existingUser) return res.status(402).json({success: false, message: "User dose't exist", data: null})
+            if(!existingUser) return res.status(401).json({success: false, message: "User dose't exist", data: null})
 
             const {expiryDate} = existingUser.registerCode
 
-            if(expiryDate < new Date()) return res.status(402).json({success: false, message: "code has expried. Try new code", data: null})
+            if(!expiryDate) return res.status(205).json({success: false, message: "you have confirmed the code"})
 
-            const encryptCode =  CryptoJS.AES.encrypt(code, env.CODE).toString()
+            if(expiryDate < new Date()) return res.status(401).json({success: false, message: "code has expried. Try new code", data: null})
 
-            if(encryptCode !== code) return res.status(402).json({success: false, message: "invalid code", data: null})
+            const encryptCode =  CryptoJS.AES.decrypt(existingUser.registerCode.code, env.CODE).toString(CryptoJS.enc.Utf8)
+            console.log(encryptCode, code, env.CODE)
 
-            const {_doc} =  await UserModel.findOneAndUpdate({_id: id, email: email},  {verified: true, registerCode: {code: null, expiryDate: null, createdAt: null}}, {new: true, password: 0})
+            if(encryptCode !== code) return res.status(401).json({success: false, message: "invalid code", data: null})
+
+            const {_doc} =  await User.findOneAndUpdate({_id: id, email: email},  {verified: true, registerCode: {code: null, expiryDate: null, createdAt: null, emailVerifyAt: new Date()}}, {new: true, password: 0})
 
             return res.status(200).json({success: true, message: "register code successful", data: _doc});
         } catch (error) {
@@ -110,61 +154,22 @@ class AuthCtl {
             if(!id || !email) return res.status(402).json({success: false, message: "field is required", data: null})
              
 
-            const existingUser = await User.findOne({email: email})
+            const existingUser = await User.findOne({email: email, active: true})
 
             if(!existingUser) return res.status(402).json({success: false, message: "User dose't exist", data: null})
 
            
-            const {code, createdAt, expiryDate} =  await this.SendCodeToEmail(email)
+            const {code, createdAt, expiryDate} =  await SendCodeToEmail(email)
 
-             await UserModel.findOneAndUpdate({_id: id, email: email},  {registerCode: {code, expiryDate, createdAt}}, {new: true, password: 0})
+             await User.findOneAndUpdate({_id: id, email: email},  {registerCode: {code, expiryDate, createdAt}}, {new: true, password: 0})
 
+             return res.status(200).json({success: true, message: "Now check your email", data: null});
 
         } catch (error) {
             console.log(error)
             return res.status(404).json({success: false, message: "register code failed", data: null})
         }
 
-    }
-
-
-    async SendCodeToEmail(email) {
-        try {
-            let code = Math.round(Math.random() * 9000)
-            let transporter = nodemailer.createTransport({
-                service: 'gmail',
-                port: 587,
-                secure: false,
-                auth: {
-                  user: env.EMAIL, 
-                  pass: env.PASS_EMAIL, 
-                },
-            });
-
-            
-            await transporter.sendMail({
-                from: 'test', // sender address
-                to: email, // list of receivers
-                subject: "Your code ✔", // Subject line
-                text: `${code}`, // plain text body
-                html: `<b>Verify your code ${code}</b>`, // html body
-            });
-
-            const hashCode = CryptoJS.AES.encrypt(code, env.CODE).toString()
-            const expiryDate = new Date() + 3600000
-            const createdAt = new Date()
-
-            return {
-                code: hashCode,
-                expiryDate,
-                createdAt,
-            }
-
-            
-            
-        } catch (error) {
-            throw new Error(error)
-        }
     }
 
         

@@ -4,12 +4,15 @@ const OrderSchema = new Schema(
   {
    userId: String,
    cartId: String,
-   shipping: Object,
    products: Array,
    combos: Array,
    payment: Object,
-   status: String,
+   status: {
+    type: String,
+    default: "pending"
+   },
    employeeId: String,
+   address: Object
   },
   {
     timeseries: true,

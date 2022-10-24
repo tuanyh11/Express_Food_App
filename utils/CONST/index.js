@@ -10,6 +10,7 @@ const EMAIL = process.env.EMAIL
 const PORT = process.env.PORT
 const JWT = process.env.JWT
 const URL_DATABASE = process.env.URL_DATABASE
+const STRIPE_KEY = process.env.STRIPE_KEY
 
 const env = {
     PASSWORD_KEY,
@@ -18,7 +19,8 @@ const env = {
     EMAIL,
     PORT,
     JWT,
-    URL_DATABASE 
+    URL_DATABASE,
+    STRIPE_KEY
 }
 
 export default env
