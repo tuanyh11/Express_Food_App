@@ -25,18 +25,14 @@ class CommentCtl {
     }
     
     async CreateComment(req, res) {
-        const {productId , parentId, userId, content} = req.body
-
+        const productId = req.params.id
+        const {comment} = req.body
+        const {id} = req?.user
        try {
-        const newComment = await ProductModel.findOneAndUpdate({_id: productId}, {$push: {comment: {
-            content: content,
-            userId: userId,
-            parentId: parentId ? parentId : null 
-        }}}, {new: true, comment: 1})
-
+        const newComment = await ProductModel.findOneAndUpdate({_id: productId},{$push: {comment: {...comment, userId: id}}}, {new: true})
         return res.status(200).json({success: true, message: "create Comment successful", data: newComment});
        } catch (error) {
-        return res.status(200).json({success: true, message: "create Comment failed", data: newComment});
+        return res.status(200).json({success: true, message: "create Comment failed", data: null});
        }
     }
 

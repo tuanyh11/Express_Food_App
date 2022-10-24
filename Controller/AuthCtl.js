@@ -55,13 +55,13 @@ class AuthCtl {
             const user = await User.findOne({email: email, active: true})
 
             if(!user) 
-                return res.status(401).json({success: false, message: "invalid credentials", data: null})
+                return res.status(401).json({success: false, message: "Email dose't exits", data: null})
 
             const decryptPassword = CryptoJS.AES.decrypt(user.password, env.PASSWORD_KEY).toString(CryptoJS.enc.Utf8)
             console.log(decryptPassword)
 
             if(!(decryptPassword === password)) 
-                return res.status(401).json({success: false, message: "invalid credentials", data: null})  
+                return res.status(401).json({success: false, message: "Invalid password", data: null})  
                 
             const {password: newPassword, ...orthers} = user._doc
 
@@ -74,7 +74,6 @@ class AuthCtl {
 
             return res.status(200).json({success: true, message: "login successful", data: { token: token, ...orthers}});
         } catch (error) {
-            console.log(error)
             return res.status(403).json({success: false, message: "login failed", data: null})
         }
     }
