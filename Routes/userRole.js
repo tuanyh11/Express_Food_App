@@ -15,4 +15,4 @@ roleRouter.route("/:id")
     .get(GetRole)
 
 
-export default roleRouter
+export default roleRouter 
