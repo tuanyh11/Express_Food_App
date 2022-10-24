@@ -69,7 +69,7 @@ const startServert = async () => {
     })
 }
 
-conn.createConnection('mongodb://localhost:27017/', (error) => {
+conn.createConnection(env.URL_DATABASE, (error) => {
     if(error) {
         console.log(error);
     } else { 
