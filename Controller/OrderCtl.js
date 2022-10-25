@@ -26,12 +26,11 @@ class OrderCtl {
     
     async CreateOrder(req, res) {
         const {address,  cartId, products, combos, payment, amount} = req.body
-        const {_id} = req?.user
+        const {id} = req?.user
 
-        console.log(_id)
 
        try {
-        const newOrder = new OrderModel({address, userId: _id, cartId, products, combos, payment, amount})
+        const newOrder = new OrderModel({address, userId: id, cartId, products, combos, payment, amount})
 
         await newOrder.save({timestamps: true})  
 
