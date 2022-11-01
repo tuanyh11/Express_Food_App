@@ -8,7 +8,10 @@ const commentRouter = Router()
 
 commentRouter.get("/", GetComments)
 
-commentRouter.post("/",userAuth, CreateComment)
+commentRouter.post("/:id",userAuth, CreateComment)
+
+commentRouter.put("/",userAuth, DelComment)
+commentRouter.put("/update",userAuth, UpdateComment)
 
 commentRouter.route("/:id")
     .get(GetCommentById)

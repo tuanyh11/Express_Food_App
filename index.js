@@ -9,6 +9,8 @@ import cors from 'cors'
 import path from 'path'
 import env from './utils/CONST/index.js'
 import { send } from 'process';
+import fs from 'fs';
+import mongoose from 'mongoose';
   
 const app = express();
 
@@ -57,8 +59,10 @@ const startServert = async () => {
         res.send("hello world!");
     })
 
+    // mongoose.set("debug", (collectionName, method, query, doc) => {
+    //     console.log(`${collectionName}.${method}`, JSON.stringify(query), doc);
+    // });
 
-    
     const PORT = env.PORT || 8000
 
     app.listen(PORT, (error) => {
@@ -67,11 +71,11 @@ const startServert = async () => {
     })
 }
 
-conn.createConnection(env.URL_DATABASE, (error) => {
+conn.createConnection(env.URL_DATABASE || 'mongodb://localhost:27017', (error) => {
     if(error) {
         console.log(error);
     } else { 
-        startServert()
+        startServert() 
     } 
 })
 

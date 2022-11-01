@@ -64,14 +64,15 @@ class UserCtl {
         try {
             const id = req.params.id
             const {email, password, passwordConfirm, address, ...others} = req.body
-            const existingUser = await UserModel.findOne({email: email}) 
+            const existingUser = await UserModel.findOne({email: email})
+
             if(existingUser.id !== id) 
                 return res.status(403).json({success: false, message: "email already exist", data: null})
 
             if(password !== passwordConfirm) 
                 return res.status(403).json({success: false, message: "password and passwordConfirm not match", data: null})
-            
-            const encryptPassword =  CryptoJS.AES.encrypt(password, process.env.PASSWORD_KEY).toString()
+            let encryptPassword ;
+            if(password ) encryptPassword = CryptoJS.AES.encrypt(password, process.env.PASSWORD_KEY).toString()
 
             const user = await UserModel.findOneAndUpdate({_id: id},  {password: encryptPassword, email, address: {...address}, ...others }, {new: true})
             return res.status(200).json({success: true, message: "upadete user successful", data: user});
@@ -82,7 +83,7 @@ class UserCtl {
     }
 
     async GetUserByPosition(req, res) {
-        const nameRole = req.query.name
+        const nameRole = req.query.name || "nhanvien"
         try {
             const role = await UserRole.findOne({name: nameRole})
             if(role) {
@@ -90,13 +91,12 @@ class UserCtl {
                     {
                         $lookup: {
                             from: "userroles",
-                            localField: "User",
-                            foreignField: "id",
-                            as: "userRole"
+                            as: "userRole",
+                            let: {role_id: "$roleId"},
+                            pipeline: [
+                                {$match: {$expr: {$eq: ["$_id", "$$role_id"]}}}
+                            ]
                         }
-                    },
-                    {
-                        $match: {$and: [{roleId: role.id}, {active: true}]}
                     },
                     {
                         $unwind: {
@@ -110,6 +110,8 @@ class UserCtl {
                         }
                     }
                 ])
+
+                console.log(users)
                 return res.status(200).json({success: true, message: "get users successful", data: users});
             }
             const users = await UserModel.find({roleId: null, active: true})

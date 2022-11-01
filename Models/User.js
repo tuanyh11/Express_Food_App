@@ -31,13 +31,17 @@ const UserSchema = new Schema(
     },
     roleId: {
       default: null,
-      type: String
+      type: Schema.Types.ObjectId,
+      ref: "userroles"
     },
     userName: {
       type: String,
       required: [true, "user name is required"],
     },
-    avatar: String,
+    avatar: {
+      default: null,
+      type: String,
+    },
     active: {
       type: Boolean,
       default: true,
@@ -72,6 +76,7 @@ const UserSchema = new Schema(
       default: null
     },
 
+
     address: 
       {
         name: String,
@@ -79,11 +84,11 @@ const UserSchema = new Schema(
       }
   },
   {
+    collection: "users",
     timeseries: true,
   }
 );
 
-const User = mongoose.model("User", UserSchema)
-User.createIndexes("email")
 
-export default mongoose.model("User", UserSchema);
+
+export default mongoose.model("User", UserSchema)

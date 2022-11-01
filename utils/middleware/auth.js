@@ -4,6 +4,7 @@ import UserRole from '../../Models/UserRole.js'
 
 export const userAuth = (req, res, next) => {
     const token = req.headers.authorization
+    console.log(token)
     if(!token)  
       return res.status(401).json({success: false, message: "you are not logged in", data: null})
     try {

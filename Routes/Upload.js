@@ -21,6 +21,7 @@ const upload = multer({ dest: 'uploads/', storage: storage })
 router.post('/single_image', upload.single('single_image'), (req, res) => {
   try {
     res.status(200).json({success: true, message: 'uploaded  image successfully', data: req.file.filename})
+    
   } catch (error) {
     console.log(error)
     res.status(403).json({success: false, message: 'uploaded image field', data: null})
@@ -31,10 +32,9 @@ router.post('/single_image', upload.single('single_image'), (req, res) => {
 router.post('/multiple_image', upload.array('multiple_image'), (req, res) => {
     
     try {
-      const files = req.files.map(file => file.filename)
+      const files = req.files.map(({filename, originalname}) => ({originalname, filename}))
      res.status(200).json({success: true, message: 'Successfully uploaded  image successfully', data: files})
     } catch (error) {
-      console.log(error)
       res.status(403).json({success: false, message: 'uploaded image field', data: null})
     }
      

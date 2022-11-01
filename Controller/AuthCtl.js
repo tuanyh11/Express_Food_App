@@ -58,7 +58,7 @@ class AuthCtl {
                 return res.status(401).json({success: false, message: "Email dose't exits", data: null})
 
             const decryptPassword = CryptoJS.AES.decrypt(user.password, env.PASSWORD_KEY).toString(CryptoJS.enc.Utf8)
-            console.log(decryptPassword)
+
 
             if(!(decryptPassword === password)) 
                 return res.status(401).json({success: false, message: "Invalid password", data: null})  

@@ -1,5 +1,18 @@
 import mongoose, { Schema } from "mongoose";
 
+const Comments = new Schema({
+    content: String,
+    parentId: {
+        type: Schema.Types.Mixed,
+        default: null,
+    },
+    userId: {
+        default: null,
+        type: Schema.Types.ObjectId,
+        ref: "users"
+    }
+}, {timestamps: true})
+
 const ProductSchema = new Schema(
   {
     name: {
@@ -11,6 +24,8 @@ const ProductSchema = new Schema(
         required: true,
         type: String
     },
+    priceMin: Number,
+    priceMax: Number,
     price: {
         required: true,
         type: Number
@@ -39,27 +54,29 @@ const ProductSchema = new Schema(
         type: String,
         required: true,
     }, 
-    categories: Array,
-    comment: [
+    categories: [
         {
-            content: String,
-            parentId: {
-                type: Schema.Types.Mixed,
-                default: null,
-            },
-            userId: String
+            type: Schema.Types.ObjectId,
+            ref: 'categories',
         }
     ],
+
+    userId: {
+        default: null,
+        type: String
+    },
 
     active: {
         type: Boolean,
         default: true
     },
-    limitComment: Number
+    comments: [Comments]
   },
   {
-    timeseries: true,
+    collection: "products",
+    timestamps: true,
   }
 );
+
 
 export default mongoose.model("Product", ProductSchema);

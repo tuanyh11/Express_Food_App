@@ -3,18 +3,8 @@ import mongoose, { Schema } from "mongoose";
 const CartSchema = new Schema(
   {
    userId: String,
-   products: [
-    {
-        productId: String,
-        quantity: Number
-    }
-   ],
-   combo: [
-    {
-      comboId: String,
-      quantity: Number
-    }
-   ]
+   products: Array,
+   combo: Array,
   },
   {
     timeseries: true,

@@ -6,7 +6,7 @@ const {CreateOrder, GetOrders} = new Order();
 
 const orderRouter = Router()
 
-orderRouter.get("/", GetOrders)
+orderRouter.get("/",userAuth, GetOrders)
 
 orderRouter.post("/",userAuth, CreateOrder)
 
