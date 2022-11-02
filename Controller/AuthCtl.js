@@ -117,9 +117,9 @@ class AuthCtl {
 
     async RegisterCode(req, res) {
         try {
-            const {id, email, code} = req.body
+            const { email, code} = req.body
 
-            if(!id || !email || !code) return res.status(401).json({success: false, message: "field is required", data: null})
+            if( !email || !code) return res.status(401).json({success: false, message: "field is required", data: null})
              
 
             const existingUser = await User.findOne({email: email, active: true})
@@ -127,6 +127,8 @@ class AuthCtl {
             if(!existingUser) return res.status(401).json({success: false, message: "User dose't exist", data: null})
 
             const {expiryDate} = existingUser.registerCode
+
+            if(existingUser.verified) return res.status(401).json({success: false, message: "you already verified"})
 
             if(!expiryDate) return res.status(205).json({success: false, message: "you have confirmed the code"})
 
@@ -137,7 +139,7 @@ class AuthCtl {
 
             if(encryptCode !== code) return res.status(401).json({success: false, message: "invalid code", data: null})
 
-            const {_doc} =  await User.findOneAndUpdate({_id: id, email: email},  {verified: true, registerCode: {code: null, expiryDate: null, createdAt: null, emailVerifyAt: new Date()}}, {new: true, password: 0})
+            const {_doc} =  await User.findOneAndUpdate({email: email},  {verified: true, registerCode: {code: null, expiryDate: null, createdAt: null, emailVerifyAt: new Date()}}, {new: true, password: 0})
 
             return res.status(200).json({success: true, message: "register code successful", data: _doc});
         } catch (error) {
@@ -148,19 +150,20 @@ class AuthCtl {
 
     async ReSendCode (req, res) {
         try {
-            const {id, email} = req.body
+            const {email} = req.body
 
-            if(!id || !email) return res.status(402).json({success: false, message: "field is required", data: null})
+            if(!email) return res.status(402).json({success: false, message: "field is required", data: null})
              
 
             const existingUser = await User.findOne({email: email, active: true})
 
             if(!existingUser) return res.status(402).json({success: false, message: "User dose't exist", data: null})
 
+            if(existingUser.verified) return res.status(401).json({success: false, message: "you already verified"})
            
             const {code, createdAt, expiryDate} =  await SendCodeToEmail(email)
 
-             await User.findOneAndUpdate({_id: id, email: email},  {registerCode: {code, expiryDate, createdAt}}, {new: true, password: 0})
+             await User.findOneAndUpdate({ email: email},  {registerCode: {code, expiryDate, createdAt}}, {new: true, password: 0})
 
              return res.status(200).json({success: true, message: "Now check your email", data: null});
 

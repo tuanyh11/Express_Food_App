@@ -5,7 +5,8 @@ import CommentModel from "../Models/Comment.js";
 import fs from 'fs'
 import path from 'path'
 import mongoose from "mongoose";
-
+import util from "util";
+const unlinkP  = util.promisify(fs.unlink)
 
 class ProductCtl {
 
@@ -102,7 +103,7 @@ class ProductCtl {
             const product = await ProductModel.findOne({_id: id})
             let listImage 
 
-            if(product.productItems.length > 0) {
+            if(product?.productItems?.length > 0) {
                 listImage = product.productItems.map(item => {
                     if(item.image) {
                         return new Promise((resolve, reject) => {
@@ -116,14 +117,11 @@ class ProductCtl {
 
             listImage && await Promise.all(listImage)
 
-            const fileId = `${path.resolve()}/uploads/${product.image}`
-            fs.unlink(fileId, (error) => {
-                if(error) return res.status(404).json({success: false, message: "delete product failed", data: null})
-            })
+            const fileId = `${path.resolve()}/uploads/${product?.image}`
+            await unlinkP(fileId)
             await ProductModel.findByIdAndDelete(id)
             return res.status(200).json({success: true, message: "delete product successful", data: product});
         } catch (error) {
-            console.log(error) 
             return res.status(404).json({success: false, message: "delete product failed", data: null})
         }
     }
