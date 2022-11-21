@@ -68,7 +68,7 @@ const UserSchema = new Schema(
     
     verified: {
       type: Boolean,
-      default: true,
+      default: false,
     },
 
     emailVerifyAt: {

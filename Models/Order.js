@@ -2,7 +2,10 @@ import mongoose, { Schema } from "mongoose";
 
 const OrderSchema = new Schema(
   {
-   userId: String,
+   userId: {
+    type: mongoose.Types.ObjectId,
+    ref: 'users'
+   },
    cartId: String,
    products: Array,
    combos: Array,
@@ -16,7 +19,7 @@ const OrderSchema = new Schema(
    amount: Number
   },
   {
-    timeseries: true,
+    timestamps: true,
   }
 );
 

@@ -6,8 +6,7 @@ class OrderCtl {
 
     async GetOrders(req, res) {
         try {
-            const {id} = req?.user
-            const orders = await OrderModel.find({userId: id})
+            const orders = await OrderModel.find()
             return res.status(200).json({success: true, message: "get Orders successful", data: orders});
         } catch (error) {
             return res.status(404).json({success: false, message: "get Orders failed", data: null})
