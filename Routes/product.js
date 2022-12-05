@@ -9,7 +9,7 @@ const productRouter = Router()
 
 productRouter.get("/", GetProducts)
 
-productRouter.post("/", userAuth, CreateProduct)
+productRouter.post("/",  CreateProduct)
 
 productRouter.route("/:id")
     .get(GetProductById)

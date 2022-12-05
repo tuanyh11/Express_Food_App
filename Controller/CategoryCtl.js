@@ -6,7 +6,8 @@ class CategoryCtl {
 
     async GetCategorys(req, res) {
         try {
-            const Categorys = await CategoryModel.find()
+            const query = req.query
+            const Categorys = await CategoryModel.find().limit(query?.limit || 0)
             return res.status(200).json({success: true, message: "get Categorys successful", data: Categorys});
         } catch (error) {
             return res.status(404).json({success: false, message: "get Categorys failed", data: null})

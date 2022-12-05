@@ -11,8 +11,13 @@ const unlinkP  = util.promisify(fs.unlink)
 class ProductCtl {
 
     async GetProducts(req, res) {
+        const query = req.query
         try {
-            const products = await ProductModel.find({active: true})
+            if(query?.categoryId) {
+                const products = await ProductModel.find({categories: query?.categoryId})
+                return res.status(200).json({success: true, message: "get Products successful", data: products});
+            }
+            const products = await ProductModel.find()
             return res.status(200).json({success: true, message: "get Products successful", data: products});
         } catch (error) {
             return res.status(404).json({success: false, message: "get Products failed", data: null})
@@ -82,10 +87,10 @@ class ProductCtl {
     }
     
     async CreateProduct(req, res) {
-        const {id} = req.user
+        // const {id} = req.user
         const {imageFake, ...rest} = req.body
        try {
-        const newProduct = new ProductModel({...rest, userId: id})
+        const newProduct = new ProductModel({...rest, userId: 1})
 
         await newProduct.save({timestamps: true})  
 
@@ -101,27 +106,23 @@ class ProductCtl {
         try {
             const id = req.params.id
             const product = await ProductModel.findOne({_id: id})
-            let listImage 
 
             if(product?.productItems?.length > 0) {
-                listImage = product.productItems.map(item => {
+                product.productItems.map(item => {
                     if(item.image) {
-                        return new Promise((resolve, reject) => {
                             const fileId = `${path.resolve()}/uploads/${item.image}`
                             fs.unlinkSync(fileId)
-                            resolve()
-                        })
                     }
                 })
             }
 
-            listImage && await Promise.all(listImage)
 
             const fileId = `${path.resolve()}/uploads/${product?.image}`
             await unlinkP(fileId)
             await ProductModel.findByIdAndDelete(id)
             return res.status(200).json({success: true, message: "delete product successful", data: product});
         } catch (error) {
+            console.log(error)
             return res.status(404).json({success: false, message: "delete product failed", data: null})
         }
     }

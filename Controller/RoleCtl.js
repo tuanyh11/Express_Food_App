@@ -67,7 +67,7 @@ import Role from "../Models/UserRole.js";
             if(existingRole?.id !== id && existingRole) 
                 return res.status(403).json({success: false, message: "name already exist", data: null})
 
-            const role = await Role.findOneAndUpdate({_id: id},  {name: name}, {new: true})
+            const role = await Role.findOneAndUpdate({_id: id},  {...req.body}, {new: true})
             return res.status(200).json({success: true, message: "upadete  role successful", data: role});
         } catch (error) {
             return res.status(404).json({success: false, message: "upadete  role failed", data: null})

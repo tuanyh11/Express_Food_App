@@ -15,10 +15,7 @@ const ComboSchema = new Schema(
     required: true,
     type: String,
    },
-   products: {
-    required: true,
-    type: Array
-   },
+   products: [{type: Schema.Types.ObjectId, ref: 'products'}],
    price: {
     required: true,
     type: Number

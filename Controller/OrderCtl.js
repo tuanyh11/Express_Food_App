@@ -61,6 +61,31 @@ class OrderCtl {
         }
     }
 
+    async getORderStats(req, res) {
+
+        const date = new Date();
+        const lastYear = new Date(date.setFullYear(date.getFullYear() - 1))
+        try {
+            const data = await OrderModel.aggregate([
+                {$match: {createdAt: {$gte: lastYear}}},
+                {$project: {
+                    month: {
+                        $month: "$createdAt"
+                    }
+                }},
+                {$group: {
+                    _id: "$month",
+                    total: {$sum: 1}
+                }}
+            ])
+
+
+            return res.status(200).json({success: true, message: "get order stats successful", data: data});
+        } catch (error) {
+            return res.status(404).json({success: false, message: "get order stats failed", data: null})
+        }
+    }
+
 }
 
 export default OrderCtl

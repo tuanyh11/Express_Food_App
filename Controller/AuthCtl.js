@@ -19,7 +19,7 @@ const SendCodeToEmail = async (email) => {
         auth: {
           user: env.EMAIL, 
           pass: env.PASS_EMAIL, 
-        },
+        }, 
     });
 
     
@@ -53,6 +53,8 @@ class AuthCtl {
                 return res.status(401).json({success: false, message: "input field can not be empty", data: null})
             
             const user = await User.findOne({email: email, active: true})
+
+        
 
             if(!user) 
                 return res.status(401).json({success: false, message: "Email dose't exits", data: null})
@@ -110,7 +112,6 @@ class AuthCtl {
             return res.status(200).json({success: true, message: "register successful", data: {email: newEmail, _id}})
 
         } catch (error) {
-            console.log(error)
             return res.status(401).json({success: false, message: "register failed", data: error})
         }
     }
@@ -135,7 +136,6 @@ class AuthCtl {
             if(expiryDate < new Date()) return res.status(401).json({success: false, message: "code has expried. Try new code", data: null})
 
             const encryptCode =  CryptoJS.AES.decrypt(existingUser.registerCode.code, env.CODE).toString(CryptoJS.enc.Utf8)
-            console.log(encryptCode, code)
 
             if(encryptCode !== code) return res.status(401).json({success: false, message: "invalid code", data: null})
 
@@ -143,7 +143,6 @@ class AuthCtl {
 
             return res.status(200).json({success: true, message: "register code successful", data: _doc});
         } catch (error) {
-            console.log(error)
             return res.status(404).json({success: false, message: "register code failed", data: null})
         }
     }
@@ -168,7 +167,6 @@ class AuthCtl {
              return res.status(200).json({success: true, message: "Now check your email", data: null});
 
         } catch (error) {
-            console.log(error)
             return res.status(404).json({success: false, message: "register code failed", data: null})
         }
 

@@ -53,7 +53,7 @@ class UserCtl {
     async DelUser(req, res) { 
         try {
             const id = req.params.id
-            const user = await UserModel.findOneAndUpdate({_id: id},  {active: false}, {new: true})
+            const user = await UserModel.findByIdAndDelete({_id: id})
             return res.status(200).json({success: true, message: "delete user successful", data: user});
         } catch (error) {
             return res.status(404).json({success: false, message: "delete user failed", data: null})
@@ -119,6 +119,32 @@ class UserCtl {
         } catch (error) {
             console.log(error)
             return res.status(404).json({success: false, message: "get users failed", data: null})
+        }
+    }
+
+    async getUserStats(req, res) {
+        const date = new Date();
+        const lastYear = new Date(date.setFullYear(date.getFullYear() - 1))
+        
+        try {
+            const data = await UserModel.aggregate([
+                {$match: {createdAt: {$gte: lastYear}}},
+                {$project: {
+                    month: {
+                        $month: "$createdAt"
+                    }
+                }},
+                {$group: {
+                    _id: "$month",
+                    total: {$sum: 1}
+                }}
+            ])
+
+            console.log(data)
+
+            return res.status(200).json({success: true, message: "get users stats successful", data: data});
+        } catch (error) {
+            return res.status(404).json({success: false, message: "get users stats failed", data: null})
         }
     }
 

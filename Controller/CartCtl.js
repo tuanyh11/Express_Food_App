@@ -14,7 +14,7 @@ class CartCtl {
             const index =  carts.products.findIndex(p => p._id === product._id)
 
             if(index !== -1) { 
-                carts.products[index] = {...carts.products[index], checkout:  product.checkout ,quantity: Number(carts.products[index].quantity) + Number(product.quantity)}
+                carts.products[index] = {...carts.products[index], checkout:  product.checkout ,quantity: Number(carts.products[index].quantity) + Number(product.quantity), name: product.name}
             } else {
                 carts.products.push(product)
             }

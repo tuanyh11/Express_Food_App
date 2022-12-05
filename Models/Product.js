@@ -40,7 +40,7 @@ const ProductSchema = new Schema(
         {
             option: String,
             price: Number,
-            image: String,
+            image: Schema.Types.Mixed,
             quantity: Number,
             unique: String
         }
