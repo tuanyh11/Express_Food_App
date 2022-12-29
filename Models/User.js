@@ -47,7 +47,7 @@ const UserSchema = new Schema(
       default: true,
     },
     contract:{
-      type: Array,
+      type: [Contract],
       default: null
     },
 

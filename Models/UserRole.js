@@ -4,8 +4,7 @@ import User from "./User.js";
 const UserRoleSchema = new Schema(
   {
    name: String,
-   displayName: String,
-   monthlySalary: Number
+   displayName: String
   },
   {
     timeseries: true,

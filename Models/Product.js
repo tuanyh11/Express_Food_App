@@ -63,12 +63,8 @@ const ProductSchema = new Schema(
 
     userId: {
         default: null,
-        type: String
-    },
-
-    active: {
-        type: Boolean,
-        default: true
+        type: String,
+        ref: 'userId'
     },
     comments: [Comments]
   },
